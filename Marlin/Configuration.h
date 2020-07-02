@@ -490,9 +490,9 @@
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
   // SKR 1.4 Bear
-  #define DEFAULT_Kp 16.5
-  #define DEFAULT_Ki 1.16
-  #define DEFAULT_Kd 58.80
+  #define DEFAULT_Kp 33.25
+  #define DEFAULT_Ki 3.53
+  #define DEFAULT_Kd 78.21
 
   // MakerGear
   //#define DEFAULT_Kp 7.0
