@@ -490,9 +490,9 @@
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
   // SKR 1.4 Bear
-  #define DEFAULT_Kp 33.25
-  #define DEFAULT_Ki 3.53
-  #define DEFAULT_Kd 78.21
+  #define DEFAULT_Kp 24.75
+  #define DEFAULT_Ki 2.25
+  #define DEFAULT_Kd 68.01
 
   // MakerGear
   //#define DEFAULT_Kp 7.0
@@ -751,7 +751,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 500, 500, 20, 60 }
+#define DEFAULT_MAX_FEEDRATE          { 500, 500, 20, 120 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -779,7 +779,7 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          800    // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_ACCELERATION          960    // X, Y, Z and E acceleration for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  1000    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION   1000    // X, Y, Z acceleration for travel (non printing) moves
 
@@ -1117,7 +1117,7 @@
 
 // The size of the print bed
 #define X_BED_SIZE 248
-#define Y_BED_SIZE 210
+#define Y_BED_SIZE 200
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #define X_MIN_POS 0
@@ -1366,8 +1366,8 @@
 
 // Manually set the home position. Leave these undefined for automatic settings.
 // For DELTA this is the top-center of the Cartesian print volume.
-//#define MANUAL_X_HOME_POS 7.5
-//#define MANUAL_Y_HOME_POS 17
+#define MANUAL_X_HOME_POS 7.5
+//#define MANUAL_Y_HOME_POS -14
 //#define MANUAL_Z_HOME_POS 0
 
 // Use "Z Safe Homing" to avoid homing with a Z probe outside the bed area.
