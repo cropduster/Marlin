@@ -47,7 +47,7 @@
 #include <string.h>
 
 #include "../../fontutils.h"
-#include "../../ultralcd.h"
+#include "../../marlinui.h"
 
 #include "../../../sd/cardreader.h"
 
@@ -181,7 +181,7 @@ uint8_t index_file     = MROWS,
         index_leveling = MROWS,
         index_tune     = MROWS;
 
-bool dwin_abort_flag = false;
+bool dwin_abort_flag = false; // Flag to reset feedrate, return to Home
 
 constexpr float default_max_feedrate[]        = DEFAULT_MAX_FEEDRATE;
 constexpr float default_max_acceleration[]    = DEFAULT_MAX_ACCELERATION;
@@ -991,15 +991,15 @@ void Popup_Window_Resume() {
   if (HMI_IsChinese()) {
     DWIN_Frame_AreaCopy(1, 160, 338, 235, 354, 98, 135);
     DWIN_Frame_AreaCopy(1, 103, 321, 271, 335, 52, 192);
-    DWIN_ICON_Show(ICON, ICON_Continue_C, 26, 307);
-    DWIN_ICON_Show(ICON, ICON_Cancel_C, 146, 307);
+    DWIN_ICON_Show(ICON, ICON_Cancel_C,    26, 307);
+    DWIN_ICON_Show(ICON, ICON_Continue_C, 146, 307);
   }
   else {
     DWIN_Draw_String(false, true, font8x16, Popup_Text_Color, Color_Bg_Window, (272 - 8 * 14) / 2, 115, F("Continue Print"));
     DWIN_Draw_String(false, true, font8x16, Popup_Text_Color, Color_Bg_Window, (272 - 8 * 22) / 2, 192, F("It looks like the last"));
     DWIN_Draw_String(false, true, font8x16, Popup_Text_Color, Color_Bg_Window, (272 - 8 * 22) / 2, 212, F("file was interrupted."));
-    DWIN_ICON_Show(ICON, ICON_Continue_E, 26, 307);
-    DWIN_ICON_Show(ICON, ICON_Cancel_E, 146, 307);
+    DWIN_ICON_Show(ICON, ICON_Cancel_E,    26, 307);
+    DWIN_ICON_Show(ICON, ICON_Continue_E, 146, 307);
   }
 }
 
@@ -1632,7 +1632,6 @@ void update_variable() {
  * TODO: New code can follow the pattern of menu_media.cpp
  * and rely on Marlin caching for performance. No need to
  * cache files here.
- *
  */
 
 #ifndef strcasecmp_P
@@ -1802,8 +1801,8 @@ void HMI_SDCardUpdate() {
         // TODO: Move card removed abort handling
         //       to CardReader::manage_media.
         card.flag.abort_sd_printing = true;
-        wait_for_heatup = false;
-        dwin_abort_flag = true;
+        wait_for_heatup = wait_for_user = false;
+        dwin_abort_flag = true; // Reset feedrate, return to Home
       }
     }
     DWIN_UpdateLCD();
@@ -2098,7 +2097,7 @@ void HMI_Printing() {
   if (HMI_flag.done_confirm_flag) {
     if (encoder_diffState == ENCODER_DIFF_ENTER) {
       HMI_flag.done_confirm_flag = false;
-      dwin_abort_flag = true;
+      dwin_abort_flag = true; // Reset feedrate, return to Home
     }
     return;
   }
@@ -2207,25 +2206,15 @@ void HMI_PauseOrStop() {
     }
     else if (select_print.now == 2) { // stop window
       if (HMI_flag.select_flag) {
-        wait_for_heatup = false; // Stop waiting for heater
-
-        #if 0
-          // TODO: In ExtUI or MarlinUI add a common stop event
-          // card.flag.abort_sd_printing = true;
-        #else
-          checkkey = Back_Main;
-          // Wait for planner moves to finish!
-          if (HMI_flag.home_flag) planner.synchronize();
-          card.endFilePrint();
-          #ifdef ACTION_ON_CANCEL
-            host_action_cancel();
-          #endif
-          #ifdef EVENT_GCODE_SD_ABORT
-            Popup_Window_Home(true);
-            queue.inject_P(PSTR(EVENT_GCODE_SD_ABORT));
-          #endif
-          dwin_abort_flag = true;
+        checkkey = Back_Main;
+        if (HMI_flag.home_flag) planner.synchronize(); // Wait for planner moves to finish!
+        wait_for_heatup = wait_for_user = false;       // Stop waiting for heating/user
+        card.flag.abort_sd_printing = true;            // Let the main loop handle SD abort
+        dwin_abort_flag = true;                        // Reset feedrate, return to Home
+        #ifdef ACTION_ON_CANCEL
+          host_action_cancel();
         #endif
+        Popup_Window_Home(true);
       }
       else
         Goto_PrintProcess(); // cancel stop
@@ -3585,58 +3574,36 @@ void EachMomentUpdate() {
     dwin_abort_flag = false;
     HMI_ValueStruct.print_speed = feedrate_percentage = 100;
     dwin_zoffset = TERN0(HAS_BED_PROBE, probe.offset.z);
-
-    planner.finish_and_disable();
-
-    #if DISABLED(SD_ABORT_NO_COOLDOWN)
-      thermalManager.disable_all_heaters();
-    #endif
-
     select_page.set(0);
     Goto_MainMenu();
   }
   #if ENABLED(POWER_LOSS_RECOVERY)
     else if (DWIN_lcd_sd_status && recovery.dwin_flag) { // resume print before power off
       static bool recovery_flag = false;
+
       recovery.dwin_flag = false;
-
-      recovery.load();
-      if (!recovery.valid()) return recovery.purge();
-
-      auto draw_first_option = [](const bool sel) {
-        const uint16_t c1 = sel ? Color_Bg_Window : Select_Color;
-        DWIN_Draw_Rectangle(0, c1, 25, 306, 126, 345);
-        DWIN_Draw_Rectangle(0, c1, 24, 305, 127, 346);
-      };
+      recovery_flag = true;
 
       auto update_selection = [&](const bool sel) {
         HMI_flag.select_flag = sel;
-        draw_first_option(sel);
+        const uint16_t c1 = sel ? Color_Bg_Window : Select_Color;
+        DWIN_Draw_Rectangle(0, c1, 25, 306, 126, 345);
+        DWIN_Draw_Rectangle(0, c1, 24, 305, 127, 346);
         const uint16_t c2 = sel ? Select_Color : Color_Bg_Window;
         DWIN_Draw_Rectangle(0, c2, 145, 306, 246, 345);
         DWIN_Draw_Rectangle(0, c2, 144, 305, 247, 346);
       };
 
-      const uint16_t fileCnt = card.get_num_Files();
-      for (uint16_t i = 0; i < fileCnt; i++) {
-        // TODO: Resume print via M1000 then update the UI
-        // with the active filename which can come from CardReader.
-        card.getfilename_sorted(SD_ORDER(i, fileCnt));
-        if (!strcmp(card.filename, &recovery.info.sd_filename[1])) { // Resume print before power failure while have the same file
-          recovery_flag = true;
-          HMI_flag.select_flag = true;
-          Popup_Window_Resume();
-          draw_first_option(false);
-          char * const name = card.longest_filename();
-          const int8_t npos = _MAX(0, DWIN_WIDTH - strlen(name) * (MENU_CHR_W)) / 2;
-          DWIN_Draw_String(false, true, font8x16, Popup_Text_Color, Color_Bg_Window, npos, 252, name);
-          DWIN_UpdateLCD();
-          break;
-        }
-      }
+      Popup_Window_Resume();
+      update_selection(true);
 
-      // if hasn't resumable G-code file
-      if (!recovery_flag) return;
+      // TODO: Get the name of the current file from someplace
+      //
+      //(void)recovery.interrupted_file_exists();
+      char * const name = card.longest_filename();
+      const int8_t npos = _MAX(0U, DWIN_WIDTH - strlen(name) * (MENU_CHR_W)) / 2;
+      DWIN_Draw_String(false, true, font8x16, Popup_Text_Color, Color_Bg_Window, npos, 252, name);
+      DWIN_UpdateLCD();
 
       while (recovery_flag) {
         ENCODER_DiffState encoder_diffState = Encoder_ReceiveAnalyze();
@@ -3644,12 +3611,12 @@ void EachMomentUpdate() {
           if (encoder_diffState == ENCODER_DIFF_ENTER) {
             recovery_flag = false;
             if (HMI_flag.select_flag) break;
-            TERN_(POWER_LOSS_RECOVERY, recovery.cancel());
+            TERN_(POWER_LOSS_RECOVERY, queue.inject_P(PSTR("M1000C")));
             HMI_StartFrame(true);
             return;
           }
           else
-            update_selection(encoder_diffState == ENCODER_DIFF_CCW);
+            update_selection(encoder_diffState == ENCODER_DIFF_CW);
 
           DWIN_UpdateLCD();
         }
@@ -3657,9 +3624,9 @@ void EachMomentUpdate() {
 
       select_print.set(0);
       HMI_ValueStruct.show_mode = 0;
-      HMI_StartFrame(false);
-      recovery.resume();
-      return;
+      queue.inject_P(PSTR("M1000"));
+      Goto_PrintProcess();
+      Draw_Status_Area(true);
     }
   #endif
   DWIN_UpdateLCD();

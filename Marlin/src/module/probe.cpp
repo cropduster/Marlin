@@ -36,9 +36,9 @@
 #include "endstops.h"
 
 #include "../gcode/gcode.h"
-#include "../lcd/ultralcd.h"
+#include "../lcd/marlinui.h"
 
-#include "../MarlinCore.h" // for stop(), disable_e_steppers, wait_for_user
+#include "../MarlinCore.h" // for stop(), disable_e_steppers
 
 #if HAS_LEVELING
   #include "../feature/bedlevel/bedlevel.h"
@@ -729,7 +729,6 @@ float Probe::probe_at_point(const float &rx, const float &ry, const ProbePtRaise
      * when starting up the machine or rebooting the board.
      * There's no way to know where the nozzle is positioned until
      * homing has been done - no homing with z-probe without init!
-     *
      */
     STOW_Z_SERVO();
   }
