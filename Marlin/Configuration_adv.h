@@ -1084,7 +1084,7 @@
   #if HAS_BED_PROBE
     #define PROBE_OFFSET_WIZARD
     #if ENABLED(PROBE_OFFSET_WIZARD)
-      #define PROBE_OFFSET_START -1.65   // Estimated nozzle-to-probe Z offset, plus a little extra
+      #define PROBE_OFFSET_START -2.05   // Estimated nozzle-to-probe Z offset, plus a little extra
       //#define PROBE_OFFSET_WIZARD_XY_POS XY_CENTER // Set a convenient position to do the measurement
     #endif
   #endif
@@ -2306,7 +2306,7 @@
 
   #if AXIS_IS_TMC(Y)
     #define Y_CURRENT       450
-    #define Y_CURRENT_HOME  450
+    #define Y_CURRENT_HOME Y_CURRENT
     #define Y_MICROSTEPS     16
     #define Y_RSENSE          0.11
     #define Y_CHAIN_POS      -1
@@ -2605,9 +2605,9 @@
 
   #if EITHER(SENSORLESS_HOMING, SENSORLESS_PROBING)
     // TMC2209: 0...255. TMC2130: -64...63
-    #define X_STALL_SENSITIVITY  65
+    #define X_STALL_SENSITIVITY  70
     #define X2_STALL_SENSITIVITY X_STALL_SENSITIVITY
-    #define Y_STALL_SENSITIVITY  80
+    #define Y_STALL_SENSITIVITY  92
     #define Y2_STALL_SENSITIVITY Y_STALL_SENSITIVITY
     //#define Z_STALL_SENSITIVITY  8
     //#define Z2_STALL_SENSITIVITY Z_STALL_SENSITIVITY
