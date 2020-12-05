@@ -3330,6 +3330,12 @@
   #define USER_DESC_10 "Probe UBL Slot 3" //Use probe to setup UBL.
   #define USER_GCODE_10 "G28\nG1 X0.00 Y0.00 F3000\nM190 S65\nG29 P1\nG29 P3 T\nG29 S3\nG29 A\nG29 F 10.0\nM500\nM140 S0\nM0 Mesh Saved in Slot 3"
 
+  #define USER_DESC_11 "Probe UBL Slot 4" //Use probe to setup UBL.
+  #define USER_GCODE_11 "G28\nG1 X0.00 Y0.00 F3000\nM190 S65\nG29 P1\nG29 P3 T\nG29 S4\nG29 A\nG29 F 10.0\nM500\nM140 S0\nM0 Mesh Saved in Slot 4"
+
+  #define USER_DESC_12 "Probe UBL Slot 5" //Use probe to setup UBL.
+  #define USER_GCODE_12 "G28\nG1 X0.00 Y0.00 F3000\nM190 S65\nG29 P1\nG29 P3 T\nG29 S5\nG29 A\nG29 F 10.0\nM500\nM140 S0\nM0 Mesh Saved in Slot 5"
+
 #endif
 
 /**
