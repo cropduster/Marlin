@@ -746,7 +746,7 @@
   // Define probe X and Y positions for Z1, Z2 [, Z3 [, Z4]]
   // If not defined, probe limits will be used.
   // Override with 'M422 S<index> X<pos> Y<pos>'
- #define Z_STEPPER_ALIGN_XY { { 20, 105 }, { 210, 105 } }
+ #define Z_STEPPER_ALIGN_XY { { 20, 100 }, { 210, 100 } }
 
   /**
    * Orientation for the automatically-calculated probe positions.
@@ -1152,7 +1152,7 @@
   #define LCD_DECIMAL_SMALL_XY
 
   // Add an 'M73' G-code to set the current percentage
-  //#define LCD_SET_PROGRESS_MANUALLY
+  #define LCD_SET_PROGRESS_MANUALLY
 
   // Show the E position (filament used) during printing
   //#define LCD_SHOW_E_TOTAL
@@ -2516,7 +2516,7 @@
    */
   #define STEALTHCHOP_XY
   #define STEALTHCHOP_Z
-  #define STEALTHCHOP_E
+  //#define STEALTHCHOP_E
 
   /**
    * Optimize spreadCycle chopper parameters by using predefined parameter sets
@@ -2647,7 +2647,7 @@
    *
    * Values from 0..1023, -1 to disable homing phase for that axis.
    */
-  // #define TMC_HOME_PHASE { 896, 896, -1 }
+  //#define TMC_HOME_PHASE { 896, 896, -1 }
 
   /**
    * Beta feature!
@@ -3241,7 +3241,7 @@
 //#define NO_WORKSPACE_OFFSETS
 
 // Extra options for the M114 "Current Position" report
-#define M114_DETAIL         // Use 'M114` for details to check planner calculations
+//#define M114_DETAIL         // Use 'M114` for details to check planner calculations
 //#define M114_REALTIME       // Real current position based on forward kinematics
 //#define M114_LEGACY         // M114 used to synchronize on every call. Enable if needed.
 
@@ -3349,20 +3349,8 @@
   #define USER_DESC_12 "Probe UBL Slot 5" //Use probe to setup UBL.
   #define USER_GCODE_12 "G28\nG1 X0.00 Y0.00 F3000\nM190 S65\nG29 P1\nG29 P3 T\nG29 S5\nG29 A\nG29 F 10.0\nM500\nM140 S0\nM0 Mesh Saved in Slot 5"
 
-  #define USER_DESC_13 "UBL Offset Step 2"
-  #define USER_GCODE_13 "G28\nG1 X125 Y105 Z0.00\nM211 S0\nM0 Set Z Offset"
-
-  #define USER_DESC_14 "UBL Offset Step 3"
-  #define USER_GCODE_14 "M211 S1\nM500"
-
-  #define USER_DESC_15 "Print Mesh Validation"
-  #define USER_GCODE_15 "G28\nG26\nG28"
-
-  #define USER_DESC_16 "Adjust Point Near" //Adjust nearest mesh point
-  #define USER_GCODE_16 "G29 P4\nM500"
-
-  #define USER_DESC_17 "Reset EEPROM"
-  #define USER_GCODE_17 "M502\nM500\nM500\nM117 EEPROM values restored\nG4 S3\nM0 Click to continue"
+  #define USER_DESC_13 "Reset EEPROM"
+  #define USER_GCODE_13 "M502\nM500\nM500\nM117 EEPROM values restored\nG4 S3\nM0 Click to continue"
 #endif
 
 /**
