@@ -590,7 +590,7 @@
 
 #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
 #define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
-#define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
+//#define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
 
 //===========================================================================
 //============================= Mechanical Settings =========================
@@ -990,7 +990,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { 32.4, -34.9, -1.417 }
+#define NOZZLE_TO_PROBE_OFFSET { 32.4, -34.9, -1.471 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1637,7 +1637,7 @@
 #define PREHEAT_3_FAN_SPEED   0 // Value from 0 to 255
 
 #define PREHEAT_4_LABEL       "Nylon"
-#define PREHEAT_4_TEMP_HOTEND 275
+#define PREHEAT_4_TEMP_HOTEND 260
 #define PREHEAT_4_TEMP_BED    90
 #define PREHEAT_4_FAN_SPEED   0 // Value from 0 to 255
 
