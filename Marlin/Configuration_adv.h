@@ -3455,7 +3455,8 @@
   //#define CUSTOM_USER_MENU_TITLE "Custom Commands"
   #define USER_SCRIPT_DONE "M117 User Script Done"
   #define USER_SCRIPT_AUDIBLE_FEEDBACK
-  //#define USER_SCRIPT_RETURN  // Return to status screen after a script
+  //#define USER_SCRIPT_RETURN    // Return to status screen after a script
+  #define CUSTOM_MENU_ONLY_IDLE   // Only show custom menu when the machine is idle
 
   #define USER_DESC_1 "Nozzle Change"
   #define USER_GCODE_1 "M104 S275\nM117 Setting Nozzle to 275C\nG4 s3\nM0 Click to continue"
